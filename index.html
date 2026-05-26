@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>配当株クイズ</title>
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8398161859137802"
+ crossorigin="anonymous"></script>
+
+<style>
+body{
+  margin:0;
+  font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  background:linear-gradient(135deg,#052e16,#064e3b);
+  color:#fff;
+}
+.container{
+  max-width:760px;
+  margin:0 auto;
+  padding:20px;
+}
+.card{
+  background:#ffffff;
+  color:#111827;
+  border-radius:22px;
+  padding:24px;
+  box-shadow:0 18px 40px rgba(0,0,0,.25);
+}
+h1{
+  text-align:center;
+  font-size:30px;
+  margin-bottom:10px;
+}
+.lead{
+  text-align:center;
+  color:#d1fae5;
+  margin-bottom:20px;
+}
+.ad{
+  margin:18px 0;
+  background:#f3f4f6;
+  border-radius:14px;
+  padding:10px;
+}
+.info{
+  display:flex;
+  justify-content:space-between;
+  margin-bottom:16px;
+  font-weight:bold;
+}
+.question{
+  font-size:22px;
+  font-weight:800;
+  margin-bottom:20px;
+  line-height:1.5;
+}
+.choices{
+  display:grid;
+  gap:12px;
+}
+button.choice{
+  border:none;
+  border-radius:14px;
+  padding:15px;
+  background:#ecfdf5;
+  color:#065f46;
+  font-size:16px;
+  font-weight:700;
+  cursor:pointer;
+  transition:.2s;
+}
+button.choice:hover{
+  transform:translateY(-2px);
+  background:#d1fae5;
+}
+.correct{
+  background:#22c55e!important;
+  color:#fff!important;
+}
+.wrong{
+  background:#ef4444!important;
+  color:#fff!important;
+}
+.result{
+  margin-top:18px;
+  font-size:18px;
+  font-weight:bold;
+  min-height:32px;
+}
+.explain{
+  margin-top:8px;
+  color:#374151;
+  line-height:1.6;
+}
+.next{
+  text-align:center;
+  margin-top:12px;
+  color:#6b7280;
+}
+.restart{
+  display:none;
+  width:100%;
+  margin-top:18px;
+  padding:15px;
+  border:none;
+  border-radius:14px;
+  background:#047857;
+  color:#fff;
+  font-size:17px;
+  font-weight:bold;
+  cursor:pointer;
+}
+</style>
+</head>
+
+<body>
+<div class="container">
+  <h1>配当株クイズ</h1>
+  <p class="lead">高配当株・増配株・配当利回りの知識をチェック！</p>
+
+  <div class="ad">
+    <!-- UIゲーム -->
+    <ins class="adsbygoogle"
+      style="display:block"
+      data-ad-client="ca-pub-8398161859137802"
+      data-ad-slot="6325875393"
+      data-ad-format="auto"
+      data-full-width-responsive="true"></ins>
+    <script>
+      (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+  </div>
+
+  <div class="card">
+    <div class="info">
+      <div id="count">1 / 10</div>
+      <div id="score">正解数：0</div>
+    </div>
+
+    <div class="question" id="question"></div>
+    <div class="choices" id="choices"></div>
+
+    <div class="result" id="result"></div>
+    <div class="explain" id="explain"></div>
+    <div class="next" id="nextMsg"></div>
+
+    <button class="restart" id="restart" onclick="restartQuiz()">もう一度遊ぶ</button>
+  </div>
+</div>
+
+<script>
+const questions = [
+  {
+    q:"配当利回りとは何を表す指標？",
+    choices:["株価に対する年間配当金の割合","会社の売上成長率","株価の上昇率","利益率の高さ"],
+    answer:0,
+    explain:"配当利回りは「年間配当金 ÷ 株価 × 100」で計算します。"
+  },
+  {
+    q:"配当株投資でよく重視されるのは？",
+    choices:["配当の安定性","社名のかっこよさ","株主総会の場所","株価の色"],
+    answer:0,
+    explain:"配当株では、配当が継続して出せるかが重要です。"
+  },
+  {
+    q:"増配株とはどんな株？",
+    choices:["配当金を増やしている株","株価が毎日上がる株","売上が必ず2倍になる株","無配の株"],
+    answer:0,
+    explain:"増配株は、配当金を継続的に増やしている企業の株です。"
+  },
+  {
+    q:"配当性向とは？",
+    choices:["利益のうち配当に回す割合","株価の値動き","社員数の増減","借金の割合"],
+    answer:0,
+    explain:"配当性向が高すぎると、無理して配当を出している可能性があります。"
+  },
+  {
+    q:"高配当株で注意すべきことは？",
+    choices:["利回りが高すぎる理由を確認する","利回りだけ見て買う","株価が安ければ必ず買う","名前を見て買う"],
+    answer:0,
+    explain:"異常に高い利回りは、減配リスクや株価下落のサインの場合があります。"
+  },
+  {
+    q:"減配とは？",
+    choices:["配当金が減ること","株価が上がること","会社が上場すること","配当金が2倍になること"],
+    answer:0,
+    explain:"減配は投資家にとって大きなマイナス材料になりやすいです。"
+  },
+  {
+    q:"無配株とは？",
+    choices:["配当を出していない株","株価がない株","上場していない株","必ず損する株"],
+    answer:0,
+    explain:"成長企業などは、利益を配当ではなく事業投資に回すことがあります。"
+  },
+  {
+    q:"配当株投資で分散投資が大切な理由は？",
+    choices:["1社の減配リスクを下げるため","全部同じ株にするため","売買回数を増やすため","株価を操作するため"],
+    answer:0,
+    explain:"複数銘柄に分けることで、1社の悪影響を小さくできます。"
+  },
+  {
+    q:"権利確定日とは？",
+    choices:["配当や株主優待を受ける権利が決まる日","株を買ってはいけない日","会社が倒産する日","株価が必ず上がる日"],
+    answer:0,
+    explain:"配当を受け取るには、権利確定日に株主である必要があります。"
+  },
+  {
+    q:"配当株を見るとき、利回り以外に確認したいものは？",
+    choices:["業績・利益・財務の安定性","会社のロゴ","株価チャートの色","CMの多さ"],
+    answer:0,
+    explain:"配当は会社の利益から出るため、業績や財務も重要です。"
+  }
+];
+
+let current = 0;
+let score = 0;
+let answered = false;
+
+const questionEl = document.getElementById("question");
+const choicesEl = document.getElementById("choices");
+const resultEl = document.getElementById("result");
+const explainEl = document.getElementById("explain");
+const countEl = document.getElementById("count");
+const scoreEl = document.getElementById("score");
+const nextMsgEl = document.getElementById("nextMsg");
+const restartBtn = document.getElementById("restart");
+
+function showQuestion(){
+  answered = false;
+  const item = questions[current];
+
+  countEl.textContent = `${current + 1} / ${questions.length}`;
+  scoreEl.textContent = `正解数：${score}`;
+  questionEl.textContent = item.q;
+  choicesEl.innerHTML = "";
+  resultEl.textContent = "";
+  explainEl.textContent = "";
+  nextMsgEl.textContent = "";
+
+  item.choices.forEach((choice, index)=>{
+    const btn = document.createElement("button");
+    btn.className = "choice";
+    btn.textContent = choice;
+    btn.onclick = () => checkAnswer(btn, index);
+    choicesEl.appendChild(btn);
+  });
+}
+
+function checkAnswer(button, selected){
+  if(answered) return;
+  answered = true;
+
+  const item = questions[current];
+  const buttons = document.querySelectorAll(".choice");
+
+  buttons.forEach((btn, index)=>{
+    btn.disabled = true;
+    if(index === item.answer){
+      btn.classList.add("correct");
+    }
+  });
+
+  if(selected === item.answer){
+    score++;
+    resultEl.textContent = "正解！";
+    resultEl.style.color = "#16a34a";
+  }else{
+    button.classList.add("wrong");
+    resultEl.textContent = "不正解…";
+    resultEl.style.color = "#dc2626";
+  }
+
+  explainEl.textContent = item.explain;
+  scoreEl.textContent = `正解数：${score}`;
+
+  if(current < questions.length - 1){
+    nextMsgEl.textContent = "2秒後に次の問題へ進みます";
+    setTimeout(()=>{
+      current++;
+      showQuestion();
+    },2000);
+  }else{
+    setTimeout(showFinal,1600);
+  }
+}
+
+function showFinal(){
+  questionEl.textContent = "結果発表";
+  choicesEl.innerHTML = "";
+  resultEl.style.color = "#111827";
+
+  let message = "";
+  if(score >= 9){
+    message = "配当株マスター級！かなり理解できています。";
+  }else if(score >= 6){
+    message = "配当株の基本はかなりOKです。";
+  }else if(score >= 3){
+    message = "まずは配当利回り・配当性向・減配リスクを覚えましょう。";
+  }else{
+    message = "これから勉強すれば大丈夫です。基礎からいきましょう。";
+  }
+
+  resultEl.textContent = `${questions.length}問中 ${score}問 正解！`;
+  explainEl.textContent = message;
+  nextMsgEl.textContent = "";
+  restartBtn.style.display = "block";
+}
+
+function restartQuiz(){
+  current = 0;
+  score = 0;
+  restartBtn.style.display = "none";
+  showQuestion();
+}
+
+showQuestion();
+</script>
+</body>
+</html>
